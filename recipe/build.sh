@@ -25,8 +25,14 @@ export M4="${PREFIX}/bin/m4"
 echo "Current work directory: $(pwd)"
 echo "PREFIX: $PREFIX"
 
+# qt6-webengine isn't published for osx-64 (Intel) yet; see meta.yaml.
+WEBENGINE_OPT="-D WITH_QTWEBENGINE=TRUE"
+
 if [ $(uname) == Darwin ]; then
   PLATFORM_OPTS="-D WITH_QSPATIALITE=FALSE -D QGIS_MACAPP_FRAMEWORK=FALSE"
+  if [[ "$SUBDIR" == "osx-64" ]]; then
+    WEBENGINE_OPT="-D WITH_QTWEBENGINE=FALSE"
+  fi
 else
   # Needed to find libGL.so
   export LDFLAGS="$LDFLAGS -Wl,-rpath-link,${BUILD_PREFIX}/${HOST}/sysroot"
@@ -81,7 +87,7 @@ cmake ${CMAKE_ARGS} \
     -D EXPAT_INCLUDE_DIR=$PREFIX/include \
     -D EXPAT_LIBRARY=$PREFIX/lib/libexpat${SHLIB_EXT} \
     -D WITH_PY_COMPILE=FALSE \
-    -D WITH_QTWEBENGINE=TRUE \
+    $WEBENGINE_OPT \
     -D WITH_PDAL=TRUE \
     -D WITH_EPT=TRUE \
     -D LazPerf_INCLUDE_DIR=$PREFIX/include \
