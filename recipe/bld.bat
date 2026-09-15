@@ -6,6 +6,14 @@ if errorlevel 1 exit 1
 
 set BUILDCONF=Release
 
+:: qmake's qt.conf is baked in at Qt's own build time and points at wherever
+:: qt6-main-feedstock's CI built it; unlike Linux/macOS, Windows binaries
+:: can't be relocated, so qmake can't find its own mkspecs (e.g. win32-msvc)
+:: without being told where to look. qt6-main installs a corrective qt.conf
+:: at the prefix root for exactly this reason.
+:: https://doc.qt.io/qt-6/qt-conf.html
+set "QT_CONF_PATH=%PREFIX%\qt6.conf"
+
 :: Workaround for this lib being required but not set in cmake
 :: (Seems maybe it used to be?)
 set _LINK_=Ws2_32.lib
