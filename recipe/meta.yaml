@@ -94,8 +94,8 @@ requirements:
     - laz-perf
     - ocl-icd      # [linux]
     - opencl-headers      # [linux]
-    - clhpp      # [linux]
     - khronos-opencl-icd-loader      # [win or osx]
+    - clhpp
     - libgl-devel                            # [linux]
     - libegl-devel                           # [linux]
     - libopengl-devel                        # [linux]
