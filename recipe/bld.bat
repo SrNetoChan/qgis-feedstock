@@ -16,6 +16,19 @@ if exist "%QT_CONF_PATH%" (type "%QT_CONF_PATH%") else (echo QT_CONF_PATH file N
 echo QMAKESPEC=%QMAKESPEC%
 if exist "%QMAKESPEC%" (echo QMAKESPEC dir exists) else (echo QMAKESPEC dir NOT FOUND)
 
+:: qt6-main's own build (this Qt6 was configured with the "thread" QT_CONFIG
+:: feature on, per mkspecs/qconfig.pri) makes qt.prf add CONFIG += thread to
+:: every project, and sip-build's generated .pro files end up trying to load
+:: it. But qtbase's mkspecs only ships mkspecs/features/unix/thread.prf --
+:: there's no win32 (or platform-agnostic) thread.prf, so qmake fails with
+:: "Project ERROR: Could not find feature thread" on Windows. An empty
+:: thread.prf is a safe no-op stand-in (mirrors what a platform not needing
+:: extra pthread-style flags would ship).
+set "QT_MKSPECS_DIR=%PREFIX%\Library\lib\qt6\mkspecs"
+if not exist "%QT_MKSPECS_DIR%\features\thread.prf" (
+    type nul > "%QT_MKSPECS_DIR%\features\thread.prf"
+)
+
 :: Workaround for this lib being required but not set in cmake
 :: (Seems maybe it used to be?)
 set _LINK_=Ws2_32.lib
