@@ -6,13 +6,20 @@ if errorlevel 1 exit 1
 
 set BUILDCONF=Release
 
-:: qmake's qt.conf is baked in at Qt's own build time and points at wherever
-:: qt6-main-feedstock's CI built it; unlike Linux/macOS, Windows binaries
-:: can't be relocated, so qmake can't find its own mkspecs (e.g. win32-msvc)
-:: without being told where to look. qt6-main installs a corrective qt.conf
-:: at the prefix root for exactly this reason.
-:: https://doc.qt.io/qt-6/qt-conf.html
+:: qmake's own qt.conf/mkspecs resolution isn't finding win32-msvc when
+:: invoked by sip-build (error: "Could not find qmake spec 'win32-msvc'"),
+:: even though qt6-main's installed qt6.conf (HostData) correctly points at
+:: a prefix-relocated Library\lib\qt6 containing mkspecs\win32-msvc. Setting
+:: QT_CONF_PATH alone did not fix this in a previous attempt, so also set
+:: QMAKESPEC directly to the mkspec directory, which bypasses qt.conf
+:: resolution entirely. https://doc.qt.io/qt-6/qmake-environment-reference.html
 set "QT_CONF_PATH=%PREFIX%\qt6.conf"
+set "QMAKESPEC=%PREFIX%\Library\lib\qt6\mkspecs\win32-msvc"
+
+echo QT_CONF_PATH=%QT_CONF_PATH%
+if exist "%QT_CONF_PATH%" (type "%QT_CONF_PATH%") else (echo QT_CONF_PATH file NOT FOUND)
+echo QMAKESPEC=%QMAKESPEC%
+if exist "%QMAKESPEC%" (echo QMAKESPEC dir exists) else (echo QMAKESPEC dir NOT FOUND)
 
 :: Workaround for this lib being required but not set in cmake
 :: (Seems maybe it used to be?)
