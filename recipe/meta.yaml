@@ -15,9 +15,8 @@ source:
     # fix segfault on import qgis.core on OSX (link extension modules
     # against Python::Module, not Python::Python / libpython)
     - 0007-link-python-module.patch  # [osx]
-    # conda-forge's khronos-opencl-icd-loader reports OpenCL 3.0, which is
-    # incompatible with the OpenCL 1.2 C++ API target QGIS compiles against
-    # on OSX; see the patch itself for why bumping this is safe at runtime.
+    # OpenCL 1.2 target on OSX is incompatible with conda-forge's
+    # khronos-opencl-icd-loader (OpenCL 3.0); see the patch for details.
     - 0008-macos-opencl-target-version.patch  # [osx]
 
 build:

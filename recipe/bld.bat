@@ -6,12 +6,7 @@ if errorlevel 1 exit 1
 
 set BUILDCONF=Release
 
-:: qmake's own qt.conf/mkspecs resolution isn't finding win32-msvc when
-:: invoked by sip-build (error: "Could not find qmake spec 'win32-msvc'"),
-:: even though qt6-main's installed qt6.conf (HostData) correctly points at
-:: a prefix-relocated Library\lib\qt6 containing mkspecs\win32-msvc. Setting
-:: QT_CONF_PATH alone did not fix this in a previous attempt, so also set
-:: QMAKESPEC directly to the mkspec directory, which bypasses qt.conf
+:: Point qmake at qt6-main's mkspecs directly; QMAKESPEC bypasses qt.conf
 :: resolution entirely. https://doc.qt.io/qt-6/qmake-environment-reference.html
 set "QT_CONF_PATH=%PREFIX%\qt6.conf"
 set "QMAKESPEC=%PREFIX%\Library\lib\qt6\mkspecs\win32-msvc"
